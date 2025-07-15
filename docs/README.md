@@ -7,7 +7,7 @@ Bienvenido a este proyecto donde construiremos un **homelab completo** basado en
 
 ## 🖥️ Hardware del Servidor
 
-![Servidor físico](imagen1.jpg)
+![Servidor físico](SOSSR_Logo.webp)
 
 **Especificaciones técnicas del servidor:**
 
