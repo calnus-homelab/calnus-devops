@@ -1,7 +1,7 @@
 apiVersion: loadbalancer.harvesterhci.io/v1beta1
 kind: LoadBalancer
 metadata:
-  name: truenas-lb-2  
+  name: truenas-lb
 spec:
   backendServerSelector:
     harvesterhci.io/vmName:
@@ -25,12 +25,28 @@ spec:
       name: samba
       port: 445
       protocol: TCP
+    - backendPort: 2049
+      name: nfstcp
+      port: 2049
+      protocol: TCP
+    - backendPort: 2049
+      name: nfsudp
+      port: 2049
+      protocol: UDP
+    - backendPort: 111
+      name: rpcbind
+      port: 111
+      protocol: TCP
+    - backendPort: 111
+      name: rpcbindudp
+      port: 111
+      protocol: UDP
   workloadType: vm
   status:
 status:
-  address: 192.168.1.31
+  address: 192.168.1.30
   allocatedAddress:
     gateway: 192.168.1.1
-    ip: 192.168.1.31
+    ip: 192.168.1.30
     ipPool: localnetworkips
-    mask: 255.255.255.0  
+    mask: 255.255.255.0
