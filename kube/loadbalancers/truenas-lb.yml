@@ -41,6 +41,14 @@ spec:
       name: rpcbindudp
       port: 111
       protocol: UDP
+    - backendPort: 9000
+      name: minio
+      port: 9000
+      protocol: TCP
+    - backendPort: 9002
+      name: minio2
+      port: 9002
+      protocol: TCP  
   workloadType: vm
   status:
 status:
