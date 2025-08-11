@@ -1,0 +1,13 @@
+apiVersion: loadbalancer.harvesterhci.io/v1beta1
+kind: IPPool
+metadata:
+  name: localnetworkips
+  annotations:
+    field.cattle.io/description: local network available IPs
+  generation: 2  
+spec:  
+  ranges:
+    - gateway: 192.168.1.1
+      rangeEnd: 192.168.1.150
+      rangeStart: 192.168.1.30
+      subnet: 192.168.1.0/24

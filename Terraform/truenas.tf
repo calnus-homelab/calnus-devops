@@ -21,21 +21,14 @@ resource "harvester_virtualmachine" "truenas" {
     wait_for_lease = true
   }
   #this is the disk for the truenas scale iso, it will not boot, but it will allow you to install truenas scale on the empty disk
-  #disk {
-  #  name       = "truenas-iso"
-  #  type       = "disk"    
-  #  bus        = "virtio"
-  #  boot_order = 1
-  #  image       = harvester_image.truenas-scale.id
-  #  auto_delete = true
-  #}
-
-  disk {
+  disk {    
     name        = "rootdisk"
-    type        = "disk"
-    size        = "32Gi"
+    type        = "disk"    
     bus         = "virtio"
-    auto_delete = true
+    size        = "32Gi"
+    boot_order  = 1    
+    #image       = "harvester-public/truenas-scale"
+    auto_delete = false
   }  
 }
 
