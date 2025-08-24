@@ -10,6 +10,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - name: Terraform Init
-        run: terraform init /cloudflare
+        run: terraform -chdir=cloudflare init 
       - name: Terraform Plan
-        run: terraform plan /cloudflare -input=false
+        run: terraform -chdir=cloudflare plan -input=false
