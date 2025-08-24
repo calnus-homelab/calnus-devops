@@ -81,7 +81,7 @@ Here’s an example of adding a new proxy host in Nginx Proxy Manager:
 proxy_hosts = [
    { 
         name = "gitlab", 
-        ip = "192.168.1.6", #IP address where the services is actually running
+        ip = "192.168.1.6", #IP address where the service is actually running
         forward_scheme = "http", 
         subdomain = "gitlab", 
         forward_port = 10080 
