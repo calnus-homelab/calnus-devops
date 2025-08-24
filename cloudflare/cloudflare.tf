@@ -12,7 +12,8 @@ locals {
     { name = "jellyfin",        type = "A", value = local.proxy_ip, ttl = 1 },
     { name = "pve",             type = "A", value = local.proxy_ip, ttl = 1 },
     { name = "s3",              type = "A", value = local.proxy_ip, ttl = 1 },
-    { name = "s3-gui",          type = "A", value = local.proxy_ip, ttl = 1 }
+    { name = "s3-gui",          type = "A", value = local.proxy_ip, ttl = 1 },
+    { name = "gitlab",          type = "A", value = local.proxy_ip, ttl = 1 }
   ]
 }
 
