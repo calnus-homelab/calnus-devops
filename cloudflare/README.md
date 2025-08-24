@@ -63,6 +63,7 @@ This project contains a basic **Terraform** configuration using the **Cloudflare
 ## Usage Example
 
 Here’s an example of adding a new Domain name in Cloudflare:
+
 local.proxy_ip always point to the same Proxy IP address
 ```hcl
     dns_records = [
