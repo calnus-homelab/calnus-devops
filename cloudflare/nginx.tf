@@ -5,10 +5,9 @@ locals {
     { name = "s3-gui", ip = "192.168.1.6", forward_scheme = "http", subdomain = "s3-gui", forward_port = 9002 },
     { name = "grafana", ip = "192.168.1.7", forward_scheme = "http", subdomain = "grafana", forward_port = 3030 },
     { name = "home-assistant", ip = "192.168.1.3", forward_scheme = "http", subdomain = "home-assistant", forward_port = 8123 }
-    # agrega aquí más proxies si los necesitas
   ]
 
-  certificate_id = 7 # ID del certificado SSL wildcard
+  certificate_id = 7
 }
 resource "nginxproxymanager_proxy_host" "tracked" {
   for_each       = { for ph in local.proxy_hosts : ph.name => ph }
