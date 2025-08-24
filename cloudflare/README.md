@@ -64,7 +64,6 @@ This project contains a basic **Terraform** configuration using the **Cloudflare
 
 Here’s an example of adding a new Domain name in Cloudflare:
 
-local.proxy_ip always point to the same Proxy IP address
 ```hcl
     dns_records = [
         { 
@@ -77,7 +76,7 @@ local.proxy_ip always point to the same Proxy IP address
     ]
 ```
 Here’s an example of adding a new proxy host in Nginx Proxy Manager:
-
+local.proxy_ip always point to the same Proxy IP address
 ```hcl
 proxy_hosts = [
     { 
