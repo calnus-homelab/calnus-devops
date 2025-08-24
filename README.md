@@ -7,7 +7,7 @@ Welcome to this project where we will build a **complete homelab** based on [Pro
 
 ## 🖥️ Server Hardware
 
-![Physical Server](SOSSR_Logo.webp)
+![Physical Server](docs/SOSSR_Logo.webp)
 
 **Server specifications:**
 
