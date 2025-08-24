@@ -1,6 +1,6 @@
 jobs:
   build:
-    runs-on: [self-hosted, mi-runner]
+    runs-on: [self-hosted, Precis]
     steps:
       - uses: actions/checkout@v4
       - name: Run a script
