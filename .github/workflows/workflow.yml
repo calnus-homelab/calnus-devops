@@ -3,7 +3,7 @@ on: push
 
 jobs:
   terraform:
-    runs-on: [self-hosted, Precis]
+    runs-on: [self-hosted, Precis, Leon]
     container:
       image: hashicorp/terraform:1.9.5
     steps:
