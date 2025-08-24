@@ -2,7 +2,8 @@ locals {
   domain = "lanfordlabs.com"
   proxy_hosts = [
     { name = "gitlab", ip = "192.168.1.6", forward_scheme = "http", subdomain = "gitlab", forward_port = 10080 },
-    { name = "s3-gui", ip = "192.168.1.6", forward_scheme = "http", subdomain = "s3-gui", forward_port = 9002 },
+    { name = "s3-gui", ip = "192.168.1.16", forward_scheme = "http", subdomain = "s3-gui", forward_port = 9002 },
+    { name = "s3", ip = "192.168.1.16", forward_scheme = "http", subdomain = "s3", forward_port = 9000 },
     { name = "grafana", ip = "192.168.1.7", forward_scheme = "http", subdomain = "grafana", forward_port = 3030 },
     { name = "home-assistant", ip = "192.168.1.3", forward_scheme = "http", subdomain = "home-assistant", forward_port = 8123 }
   ]

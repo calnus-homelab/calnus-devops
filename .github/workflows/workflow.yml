@@ -8,7 +8,7 @@ jobs:
       image: hashicorp/terraform:1.9.5
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      NGINX_PROXY_MANAGER_URL: ${{ secrets.NGINX_PROXY_MANAGER_URL }}
+      NGINX_PROXY_MANAGER_HOST: ${{ secrets.NGINX_PROXY_MANAGER_HOST }}
       NGINX_PROXY_MANAGER_USERNAME: ${{ secrets.NGINX_PROXY_MANAGER_USERNAME }}
       NGINX_PROXY_MANAGER_PASSWORD: ${{ secrets.NGINX_PROXY_MANAGER_PASSWORD }}
     steps:

@@ -2,7 +2,7 @@ terraform {
     backend "s3" {
         bucket = "terraform"                  # Name of the S3 bucket
         endpoints = {
-            s3 = "http://192.168.1.30:9000"   # Minio endpoint
+            s3 = "https://s3.lanfordlabs.com"   # Minio endpoint
         }
         key = "harvester.tfstate"        # Name of the tfstate file
         region = "local"                     # Region validation will be skipped
