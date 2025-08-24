@@ -1,54 +1,62 @@
-# calnus-devops Dovs
-# 🚀 Proyecto: Homelab Proxmox + Terraform
+# calnus-devops DevOps
+# 🚀 Project: Proxmox Homelab + Terraform
 
-Bienvenido a este proyecto donde construiremos un **homelab completo** basado en [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), controlado mediante Terraform y desplegando servicios multimedia, de monitoreo y virtualización.
-
----
-
-## 🖥️ Hardware del Servidor
-
-![Servidor físico](SOSSR_Logo.webp)
-
-**Especificaciones técnicas del servidor:**
-
-- **CPU**: Quad-Core (4 núcleos físicos)
-- **RAM**: 16 GB DDR4
-- **Almacenamiento:**
-  - **5 SSDs** de 900 GB (RAID Z1 - ZFS)
-  - **2 NVMe** de 4 TB (para VMs de alto rendimiento)
+Welcome to this project where we will build a **complete homelab** based on [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), managed through Terraform, deploying multimedia, monitoring, and virtualization services.
 
 ---
 
-## ⚙️ Objetivos del Proyecto
+## 🖥️ Server Hardware
 
-1. Instalar y configurar **Proxmox VE** en el servidor físico.
-2. Usar **Terraform** para automatizar la creación de múltiples máquinas virtuales.
-3. Desplegar servicios esenciales para entretenimiento, desarrollo y monitoreo.
+![Physical Server](SOSSR_Logo.webp)
 
----
+**Server specifications:**
 
-## 🧱 Infraestructura Automatizada con Terraform
-
-Terraform se encargará de:
-
-- Provisionar VMs en Proxmox.
-- Aplicar configuración básica (cloud-init con claves SSH).
-- Integrarse con Ansible o scripts para instalar servicios.
+- **CPU**: Quad-Core (4 physical cores)  
+- **RAM**: 16 GB DDR4  
+- **Storage:**
+  - **5 SSDs** of 900 GB (RAID Z1 - ZFS)  
+  - **2 NVMe** of 4 TB (for high-performance VMs)  
 
 ---
 
-## 📦 Servicios que se desplegarán
+## ⚙️ Project Objectives
 
-| Servicio        | Descripción                                       |
+1. Install and configure **Proxmox VE** on the physical server.  
+2. Use **Terraform** to automate the creation of multiple virtual machines.  
+3. Deploy essential services for entertainment, development, and monitoring.  
+4. Manage a **Harvester cluster** consisting of **3 nodes**, each with **12 cores**, **16 GB RAM**, and **512 GB storage** for **Longhorn**.  
+5. Orchestrate all infrastructure with Terraform and **CI/CD pipelines using GitHub Actions and a self hosted Runner**.  
+
+---
+
+## 🧱 Automated Infrastructure with Terraform
+
+Terraform will:
+
+- Provision VMs in Proxmox and the Harvester cluster.  
+- Apply basic configuration (cloud-init with SSH keys).  
+
+---
+
+## 📦 Services to Be Deployed
+
+| Service         | Description                                        |
 |----------------|---------------------------------------------------|
-| **Jellyfin**    | Servidor de streaming multimedia.                 |
-| **Whale**       | Reproductor y servidor de música autoalojado.     |
-| **Windows VM**  | Entorno gráfico para pruebas o apps Win-only.     |
-| **Prometheus**  | Monitorización de recursos y métricas.            |
-| **Grafana**     | Dashboards visuales para métricas.                |
-| **ELK Stack**   | Elasticsearch + Logstash + Kibana para logs.      |
+| **Jellyfin**    | Multimedia streaming server.                     |
+| **Whale**       | Self-hosted music player and server.             |
+| **Windows VM**  | Graphical environment for testing or Windows-only apps. |
+| **Prometheus**  | Resource and metrics monitoring.                 |
+| **Grafana**     | Visual dashboards for metrics.                   |
+| **ELK Stack**   | Elasticsearch + Logstash + Kibana for log management. |
 
 ---
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
+*(Include your project directories, Terraform configs, and scripts here.)*
+
+Additionally:
+
+- Domains have been registered and configured.  
+- Proxy settings are managed in the `cloudflare` folder.  
+- Detailed configuration for this part using Terraform, including **CI/CD with GitHub Actions** and a **self-hosted GitHub Runner**, can be found in: [cloudflare/README.md](../cloudflare/README.md)
