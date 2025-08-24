@@ -1,0 +1,7 @@
+jobs:
+  build:
+    runs-on: [self-hosted, mi-runner]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a script
+        run: echo "¡Hola desde mi propio runner!"
