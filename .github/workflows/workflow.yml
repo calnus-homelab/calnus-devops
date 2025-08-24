@@ -1,9 +1,15 @@
-name: Hello World
+name: Terraform Init
 on: push
 
 jobs:
-  my-job:
+  terraform:
     runs-on: [self-hosted, Precis]
+    container:
+      image: hashicorp/terraform:1.9.5
     steps:
-      - name: Print Hello World
-        run: echo "Hello World!"
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Terraform Init
+        run: terraform init /cloudflare
+      - name: Terraform Plan
+        run: terraform plan /cloudflare -input=false
