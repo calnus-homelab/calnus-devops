@@ -9,9 +9,9 @@ locals {
     { name = "pve",             ip = "192.168.1.24", forward_scheme = "https", subdomain = "pve", forward_port = 8006 },
     { name = "harvester",       ip = "192.168.2.27", forward_scheme = "https", subdomain = "harvester", forward_port = 443 },
     { name = "rancher",         ip = "192.168.2.27", forward_scheme = "https", subdomain = "rancher", forward_port = 443 },
-    { name = "truenas",         ip = "IP_TRUENAS", forward_scheme = "http", subdomain = "truenas", forward_port = 8080 },
-    { name = "immich",          ip = "IP_IMMICH", forward_scheme = "http", subdomain = "immich", forward_port = 80 },
-    { name = "jellyfin",        ip = "IP_JELLYFIN", forward_scheme = "http", subdomain = "jellyfin", forward_port = 8096 }
+    { name = "truenas",         ip = "192.168.1.16", forward_scheme = "https", subdomain = "truenas", forward_port = 443 },
+    { name = "immich",          ip = "192.168.1.8", forward_scheme = "http", subdomain = "immich", forward_port = 2283 },
+    { name = "jellyfin",        ip = "192.168.1.59", forward_scheme = "http", subdomain = "jellyfin", forward_port = 8096 }
   ]
   certificate_id = 7
 }
