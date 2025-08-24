@@ -3,8 +3,7 @@ on: push
 
 jobs:
   my-job:
-    runs-on:  [self-hosted, Precis]
-
-steps:
-- name: Print Hello World
-  run: echo "Hello World!"
+    runs-on: [self-hosted, Precis]
+    steps:
+      - name: Print Hello World
+        run: echo "Hello World!"
