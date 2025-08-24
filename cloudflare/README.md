@@ -66,12 +66,11 @@ Here’s an example of adding a new Domain name in Cloudflare:
 
 ```hcl
     dns_records = [
-        { 
-            name = "gitlab", 
-            ip = "192.168.1.6", 
-            forward_scheme = "http", 
-            subdomain = "gitlab", 
-            forward_port = 10080 
+        {         
+            name = "gitlab",          
+            type = "A", 
+            value = local.proxy_ip, 
+            ttl = 1                 
         }, ...    
     ]
 ```
@@ -79,13 +78,13 @@ Here’s an example of adding a new proxy host in Nginx Proxy Manager:
 local.proxy_ip always point to the same Proxy IP address
 ```hcl
 proxy_hosts = [
-    { 
-        name = "harvester",                    "Service name"
-        ip="192.168.1.6",                   "Remote Ip Adress"
-        forward_scheme="http",              "protocol"
-        domain = "harvester.lanfordlabs.com",  "fQDN"
-        forward_port = 10080                "PORT"
-        }, ...    
+   { 
+        name = "gitlab", 
+        ip = "192.168.1.6", #IP address where the services is actually running
+        forward_scheme = "http", 
+        subdomain = "gitlab", 
+        forward_port = 10080 
+    }, ...
   ]
 ```
 
