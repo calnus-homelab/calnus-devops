@@ -1,7 +1,6 @@
 
 locals {
   proxy_ip = "192.168.1.6"
-
   dns_records = [
     { name = "harvester",       type = "A", value = local.proxy_ip, ttl = 1 },
     { name = "rancher",         type = "A", value = local.proxy_ip, ttl = 1 },
