@@ -10,6 +10,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - name: Terraform Init
+        env:
+          TF_VAR_CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}          
+          TF_VAR_NGINX_PROXY_MANAGER_URL: ${{ secrets.NGINX_PROXY_MANAGER_URL }}
+          TF_VAR_NGINX_PROXY_MANAGER_USERNAME: ${{ secrets.NGINX_PROXY_MANAGER_USERNAME }}
+          TF_VAR_NGINX_PROXY_MANAGER_PASSWORD: ${{ secrets.NGINX_PROXY_MANAGER_PASSWORD }}
         run: terraform -chdir=cloudflare init 
       - name: Terraform Plan
         env:
