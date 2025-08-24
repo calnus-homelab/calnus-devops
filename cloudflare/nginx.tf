@@ -11,7 +11,8 @@ locals {
     { name = "rancher",         ip = "192.168.2.27", forward_scheme = "https", subdomain = "rancher", forward_port = 443 },
     { name = "truenas",         ip = "192.168.1.16", forward_scheme = "https", subdomain = "truenas", forward_port = 443 },
     { name = "immich",          ip = "192.168.1.8", forward_scheme = "http", subdomain = "immich", forward_port = 2283 },
-    { name = "jellyfin",        ip = "192.168.1.59", forward_scheme = "http", subdomain = "jellyfin", forward_port = 8096 }
+    { name = "jellyfin",        ip = "192.168.1.59", forward_scheme = "http", subdomain = "jellyfin", forward_port = 8096 },
+    { name = "ytd",             ip = "192.168.1.8", forward_scheme = "http", subdomain = "ytd", forward_port = 8000 }
   ]
   certificate_id = 7
 }
