@@ -1,8 +1,10 @@
+name: Hello World
+on: push
+
 jobs:
-  on: push
-  build:
-    runs-on: [self-hosted, Precis]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run a script
-        run: echo "¡Hola desde mi propio runner!"
+  my-job:
+    runs-on:  [self-hosted, Precis]
+
+steps:
+- name: Print Hello World
+  run: echo "Hello World!"
