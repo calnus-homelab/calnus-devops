@@ -59,4 +59,4 @@ Additionally:
 
 - Domains have been registered and configured.  
 - Proxy settings are managed in the `cloudflare` folder.  
-- Detailed configuration for this part using Terraform, including **CI/CD with GitHub Actions** and a **self-hosted GitHub Runner**, can be found in: [cloudflare/README.md](../cloudflare/README.md)
+- Detailed configuration for this part using Terraform, including **CI/CD with GitHub Actions** and a **self-hosted GitHub Runner**, can be found in: [cloudflare/README.md](cloudflare/README.md)
