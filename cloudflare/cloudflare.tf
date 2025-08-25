@@ -1,28 +1,30 @@
 
 locals {
-  proxy_ip = "192.168.1.6"
+  proxy_ip    = "192.168.1.6"
+  proxy_lb_Ip = "192.168.1.6"
 
   dns_names = [
-    "harvester",
-    "rancher",
-    "truenas",
-    "grafana",
-    "home-assistant",
-    "immich",
-    "jellyfin",
-    "pve",
-    "s3",
-    "s3-gui",
-    "gitlab",
-    "localai",
-    "ytd"
+    { name = "harvester",         adress = proxy_ip },
+    { name = "rancher",           adress = proxy_ip },
+    { name = "truenas",           adress = proxy_ip },
+    { name = "grafana",           adress = proxy_ip },
+    { name = "home-assistant",    adress = proxy_ip },
+    { name = "immich",            adress = proxy_ip },
+    { name = "jellyfin",          adress = proxy_ip },
+    { name = "pve",               adress = proxy_ip },
+    { name = "pve.dev",           adress = proxy_ip },
+    { name = "s3",                adress = proxy_ip },
+    { name = "s3-gui",            adress = proxy_lb_Ip },
+    { name = "gitlab",            adress = proxy_lb_Ip },
+    { name = "localai",           adress = proxy_lb_Ip },
+    { name = "ytd",               adress = proxy_lb_Ip }
   ]
 
   dns_records = [
-    for name in local.dns_names : {
-      name  = name
+    for domain in local.dns_names : {
+      name  = app.name
       type  = "A"
-      value = local.proxy_ip
+      value = app.adress
       ttl   = 1
     }
   ]
