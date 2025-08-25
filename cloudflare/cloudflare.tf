@@ -10,7 +10,7 @@ locals {
     "immich",
     "jellyfin",
     "pve",
-    "pve-dev",
+    "pve.dev",
     "s3",
     "s3-gui",
     "gitlab",
