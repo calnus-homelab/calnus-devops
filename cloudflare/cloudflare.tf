@@ -22,9 +22,9 @@ locals {
 
   dns_records = [
     for domain in local.dns_names : {
-      name  = app.name
+      name  = domain.name
       type  = "A"
-      value = app.adress
+      value = domain.adress
       ttl   = 1
     }
   ]
