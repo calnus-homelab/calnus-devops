@@ -5,7 +5,7 @@ locals {
   apps = [
     { name = "gitlab",          ip = "192.168.1.6",   port = 10080, scheme = "http" },
     { name = "s3-gui",          ip = "192.168.1.16",  port = 9002 },
-    { name = "s3",              ip = "192.168.1.16",  port = 9000 },
+    { name = "s3",              ip = "192.168.2.16",  port = 9000 },
     { name = "grafana",         ip = "192.168.1.7",   port = 3030 },
     { name = "home-assistant",  ip = "192.168.1.3",   port = 8123 },
     { name = "pve",             ip = "192.168.1.24",  port = 8006, scheme = "https" },
