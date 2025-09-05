@@ -10,7 +10,7 @@ locals {
     { name = "immich" },
     { name = "jellyfin" },
     { name = "pve" },
-    { name = "pve.dev" },
+    { name = "pve-dev" },
     { name = "s3" },
     { name = "s3-gui" },
     { name = "gitlab" },

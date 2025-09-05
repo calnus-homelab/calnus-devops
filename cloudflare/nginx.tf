@@ -9,7 +9,7 @@ locals {
     { name = "grafana",         ip = "192.168.1.7",   port = 3030 },
     { name = "home-assistant",  ip = "192.168.1.3",   port = 8123 },
     { name = "pve",             ip = "192.168.1.24",  port = 8006, scheme = "https" },
-    { name = "pve.dev",         ip = "192.168.2.2",   port = 8006, scheme = "https" },
+    { name = "pve-dev",         ip = "192.168.2.2",   port = 8006, scheme = "https" },
     { name = "harvester",       ip = "192.168.2.27",  port = 443,  scheme = "https" },
     { name = "rancher",         ip = "192.168.2.27",  port = 443,  scheme = "https" },
     { name = "truenas",         ip = "192.168.1.16",  port = 443,  scheme = "https" },
