@@ -41,7 +41,4 @@ resource "cloudflare_record" "tracked" {
   content = each.value.value
   ttl     = each.value.ttl
 
-  lifecycle {
-    prevent_destroy = true
-  }
 }
