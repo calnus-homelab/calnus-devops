@@ -15,7 +15,8 @@ locals {
     "s3-gui",
     "gitlab",
     "localai",
-    "ytd"
+    "ytd",
+    "meshcommander"
   ]
 
   dns_records = [

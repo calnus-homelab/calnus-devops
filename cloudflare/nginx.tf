@@ -16,6 +16,7 @@ locals {
     { name = "immich",          ip = "192.168.1.8",   port = 2283 },
     { name = "jellyfin",        ip = "192.168.1.59",  port = 8096 },
     { name = "localai",         ip = "192.168.1.227", port = 8080 },
+    { name = "meshcommander",   ip = "192.168.1.9", port = 3000 },
     { name = "ytd",             ip = "192.168.1.8",   port = 8000 }
   ]
   proxy_hosts = [
