@@ -2,28 +2,29 @@ locals {
   proxy_ip = "192.168.1.6"
 
   dns_names = [
-    "harvester",
-    "rancher",
-    "truenas",
-    "grafana",
-    "home-assistant",
-    "immich",
-    "jellyfin",
-    "pve",
-    "pve.dev",
-    "s3",
-    "s3-gui",
-    "gitlab",
-    "localai",
-    "ytd",
-    "meshcommander"
-  ]
+    { name = "harvester", ip="192.168.2.27"},
+    { name = "rancher", ip="192.168.2.27" },
+    { name = "truenas" },
+    { name = "grafana" },
+    { name = "home-assistant" },
+    { name = "immich" },
+    { name = "jellyfin" },
+    { name = "pve" },
+    { name = "pve.dev" },
+    { name = "s3" },
+    { name = "s3-gui" },
+    { name = "gitlab" },
+    { name = "localai" },
+    { name = "ytd" },
+    { name = "meshcommander" }
+   ]
 
   dns_records = [
-    for name in local.dns_names : {
-      name  = name
+    for domain in local.dns_names : {
+      name  = domain.name
       type  = "A"
       value = local.proxy_ip
+      value = lookup(domain, "ip", local.proxy_ip)
       ttl   = 1
     }
   ]
