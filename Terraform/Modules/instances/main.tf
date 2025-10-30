@@ -55,7 +55,7 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
     interface    = "virtio0"
     iothread     = true
     discard      = "on"
-    size         = 20
+    size         = var.storage_size
   }
 
   initialization {

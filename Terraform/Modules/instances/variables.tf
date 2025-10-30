@@ -47,3 +47,8 @@ variable "cloud_image" {
   description = "OS image"
   type =string
 }
+variable storage_size{
+    description = "The new server Core count"
+    type = number
+    default=20
+}
