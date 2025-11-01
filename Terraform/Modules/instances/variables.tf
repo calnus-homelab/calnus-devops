@@ -52,3 +52,12 @@ variable storage_size{
     type = number
     default=20
 }
+variable ip_address{
+    description = "The new Ip address"
+    type = string    
+}
+variable gw_ip_address{
+    description = "The gw Ip address"
+    type = string    
+    default="192.168.68.1"
+}
