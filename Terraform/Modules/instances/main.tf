@@ -10,6 +10,7 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
     data = templatefile("${path.module}/user-data-cloud-config.yaml", {
       Name           = local.Name
       ssh_public_key = trimspace(var.ssh_public_key)
+      registry       = var.registry_cache
     })
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }

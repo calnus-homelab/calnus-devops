@@ -18,6 +18,14 @@ packages:
   - ca-certificates
   - gnupg
   - lsb-release
+write_files:
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "registry-mirrors": ["${registry}"]
+      }
+    owner: root:root
+    permissions: '0644'
 runcmd:
   - systemctl enable qemu-guest-agent
   - systemctl start qemu-guest-agent

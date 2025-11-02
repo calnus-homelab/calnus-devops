@@ -61,3 +61,7 @@ variable gw_ip_address{
     type = string    
     default="192.168.68.1"
 }
+variable registry_cache{
+    type=string
+    default="http://192.168.68.9:5000"
+}
