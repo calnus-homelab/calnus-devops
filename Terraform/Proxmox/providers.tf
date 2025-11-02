@@ -6,3 +6,11 @@ terraform {
     }
   }
 }
+
+provider "proxmox" {
+  endpoint = "https://192.168.68.103:8006/"
+  insecure = true
+  ssh {
+    agent = true
+  }
+}
