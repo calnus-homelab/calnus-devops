@@ -5,7 +5,7 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
   content_type = "snippets"
   datastore_id = var.storage_pool
   node_name    = var.node_name
-
+  
   source_raw {
     data = <<-EOF
     #cloud-config
@@ -25,10 +25,21 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
       - qemu-guest-agent
       - net-tools
       - curl
+      - ca-certificates
+      - gnupg
+      - lsb-release
     runcmd:
       - systemctl enable qemu-guest-agent
       - systemctl start qemu-guest-agent
-      - echo "done" > /tmp/cloud-config.done
+      - mkdir -p /etc/apt/keyrings
+      - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+      - apt-get update
+      - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      - usermod -aG docker ubuntu
+      - systemctl enable docker
+      - systemctl start docker
+      - echo "Docker and Docker Compose installed successfully" > /root/cloud-init.log
     EOF
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }
@@ -66,6 +77,10 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
         gateway = var.gw_ip_address
       }
     }
+    user_account {      
+      password = random_password.ubuntu_vm_password.result
+      username = "ubuntu"
+    }    
     user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id 
   }
   network_device {
@@ -73,3 +88,13 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
   }
 
 }
+resource "random_password" "ubuntu_vm_password" {
+  length           = 16
+  override_special = "_%@"
+  special          = true
+}
+output "ubuntu_vm_password" {
+  value     = random_password.ubuntu_vm_password.result
+  sensitive = true
+}
+

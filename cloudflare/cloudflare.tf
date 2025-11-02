@@ -14,6 +14,9 @@ locals {
     { name = "gitlab" },
     { name = "localai" },
     { name = "ytd" },
+    { name = "isos", ip="192.168.68.4" },
+    { name = "nas", ip="192.168.68.4" },
+    { name = "pve-local", ip="192.168.68.4" },
     { name = "meshcommander" }
    ]
 
