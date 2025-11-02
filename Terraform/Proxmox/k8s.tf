@@ -21,5 +21,4 @@ module "ubuntu_nodes" {
   providers = {
     proxmox = proxmox
   }
-
 }
