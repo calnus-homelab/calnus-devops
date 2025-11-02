@@ -3,11 +3,11 @@ module "ubuntu-node-1" {
   storage_pool      = "local"
   nvme_storage_pool = "nvme"
   server_name       = "ubuntu-k8s-node-1"
-  ip_address        ="192.168.68.25/24"
+  ip_address        = "192.168.68.25/24"
   core_count        = 4
   memory            = 7168
   storage_size      = 64
-  cloud_image       = module.ubuntu_loudimg_24_04.id
+  cloud_image       = module.ubuntu_cloudimg_24_04.id
 }
 
 module "ubuntu-node-2" {
@@ -19,16 +19,16 @@ module "ubuntu-node-2" {
   core_count        = 4
   memory            = 7168
   storage_size      = 64
-  cloud_image       = module.ubuntu_loudimg_24_04.id
+  cloud_image       = module.ubuntu_cloudimg_24_04.id
 }
 module "ubuntu-node-3" {
   source            = "../Modules/instances"
   storage_pool      = "local"
   nvme_storage_pool = "nvme"
   server_name       = "ubuntu-k8s-node-3"
-  ip_address        ="192.168.68.27/24"
+  ip_address        = "192.168.68.27/24"
   core_count        = 4
   memory            = 7168
   storage_size      = 64
-  cloud_image       = module.ubuntu_loudimg_24_04.id
+  cloud_image       = module.ubuntu_cloudimg_24_04.id
 }

@@ -5,45 +5,16 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
   content_type = "snippets"
   datastore_id = var.storage_pool
   node_name    = var.node_name
-  
+
   source_raw {
-    data = <<-EOF
-    #cloud-config
-    hostname: ${local.Name}
-    timezone: America/Mexico_City
-    users:
-      - default
-      - name: ubuntu
-        groups:
-          - sudo
-        shell: /bin/bash
-        ssh_authorized_keys:
-          - ${trimspace(var.ssh_public_key)}
-        sudo: ALL=(ALL) NOPASSWD:ALL
-    package_update: true
-    packages:
-      - qemu-guest-agent
-      - net-tools
-      - curl
-      - ca-certificates
-      - gnupg
-      - lsb-release
-    runcmd:
-      - systemctl enable qemu-guest-agent
-      - systemctl start qemu-guest-agent
-      - mkdir -p /etc/apt/keyrings
-      - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-      - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-      - apt-get update
-      - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-      - usermod -aG docker ubuntu
-      - systemctl enable docker
-      - systemctl start docker
-      - echo "Docker and Docker Compose installed successfully" > /root/cloud-init.log
-    EOF
+    data = templatefile("${path.module}/user-data-cloud-config.yaml", {
+      Name           = local.Name
+      ssh_public_key = trimspace(var.ssh_public_key)
+    })
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }
 }
+
 
 
 resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
@@ -76,25 +47,12 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
         address = var.ip_address
         gateway = var.gw_ip_address
       }
-    }
-    user_account {      
-      password = random_password.ubuntu_vm_password.result
-      username = "ubuntu"
-    }    
+    }   
     user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id 
   }
   network_device {
     bridge = "vmbr0"
   }
 
-}
-resource "random_password" "ubuntu_vm_password" {
-  length           = 16
-  override_special = "_%@"
-  special          = true
-}
-output "ubuntu_vm_password" {
-  value     = random_password.ubuntu_vm_password.result
-  sensitive = true
 }
 
