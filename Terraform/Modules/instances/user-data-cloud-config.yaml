@@ -1,6 +1,6 @@
 #cloud-config
-hostname: ${Name}
-timezone: America/Mexico_City
+hostname: ${NAME}
+timezone: ${TIME_ZONE}
 preserve_hostname: false
 package_update: true
 package_upgrade: true
@@ -11,7 +11,7 @@ users:
       - sudo
     shell: /bin/bash
     ssh_authorized_keys:
-      - ${ssh_public_key}
+      - ${SSH_PUBLIC_KEY}
     sudo: ALL=(ALL) NOPASSWD:ALL
 packages:
   - qemu-guest-agent
@@ -37,6 +37,24 @@ write_files:
       net.bridge.bridge-nf-call-ip6tables = 1
       net.bridge.bridge-nf-call-iptables = 1
       net.ipv4.ip_forward = 1
+
+  - path: /etc/containerd/config.toml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      version = 2
+      [plugins."io.containerd.grpc.v1.cri".registry]
+        config_path = "/etc/containerd/certs.d"
+
+  - path: /etc/containerd/certs.d/docker.io/hosts.toml
+    owner: root:root
+    permissions: '0644'
+    content: |
+      server = "https://registry-1.docker.io"
+
+      [host."http://${REGISTRY}"]
+        capabilities = ["pull", "resolve"]
+        skip_verify = true
 
 runcmd:
   - [ systemctl, enable, qemu-guest-agent]
@@ -74,5 +92,12 @@ runcmd:
   - [ apt, update ]
   - [ apt, install, -y, kubelet, kubeadm, kubectl ]
   - [ apt-mark, hold, kubelet, kubeadm, kubectl ]
+  # - sudo mkdir -p /etc/containerd/certs.d/docker.io
+  - echo 'plugins."io.containerd.grpc.v1.cri".registry.config_path = "/etc/containerd/certs.d"' | sudo tee -a /etc/containerd/config.toml
+  #- printf 'server = "https://registry-1.docker.io"\nhost."http://${REGISTRY}".capabilities = ["pull", "resolve"]\n' | sudo tee /etc/containerd/certs.d/docker.io/hosts.toml
 
+  # Finalmente reiniciamos containerd y kubelet
+  - [ systemctl, daemon-reload ]
+  - [ systemctl, restart, containerd ]
+  - [ systemctl, restart, kubelet ]
 # End of cloud-config

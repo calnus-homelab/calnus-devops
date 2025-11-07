@@ -25,23 +25,12 @@ variable server_name{
 }
 variable "ssh_public_key" {
   type        = string
-  description = "SSH public key content (ssh-ed25519 ...)"
-  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAb9AnKMunSf/lpVMB0lJP9gFWkmnjE6ISe1s+ZvWo5x jose@MX-IT-JOSANTGAR"
+  description = "SSH public key path (~/.ssh/id_rsa.pub)"  
 }
 variable cpu_type{
     description = "The new server type"
     type = string
     default="x86-64-v2-AES"
-}
-variable core_count{
-    description = "The new server Core count"
-    type = number
-    default=4
-}
-variable memory{
-    description = "The new server memory"
-    type = number
-    default=4096
 }
 variable "cloud_image" {
   description = "OS image"
@@ -63,9 +52,17 @@ variable gw_ip_address{
 }
 variable registry_cache{
     type=string
-    default="http://192.168.68.9:5000"
+    default="192.168.68.9:5000"
 }
 variable kuberentes_version{
     type=string
     default="v1.34"
+}
+variable time_zone{
+    type=string
+    default="America/Mexico_City"
+}
+variable "instance_type" {
+  type        = string
+  description = "EC2-style instance type name (e.g. t3.small, m5.large)."
 }
