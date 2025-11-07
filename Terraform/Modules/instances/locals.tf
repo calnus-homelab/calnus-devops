@@ -14,4 +14,6 @@ locals {
     var.instance_type,
     local.instance_type_map["t3.small"]
   )
+  password_hash = bcrypt(random_password.vm_password.result)
+
 }

@@ -39,7 +39,7 @@ variable "cloud_image" {
 variable "storage_size" {
   description = "The new server Core count"
   type        = number
-  default     = 20
+  default     = 2
 }
 variable "ip_address" {
   description = "The new Ip address"

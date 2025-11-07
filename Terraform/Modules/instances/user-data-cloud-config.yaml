@@ -13,6 +13,11 @@ users:
     ssh_authorized_keys:
       - ${SSH_PUBLIC_KEY}
     sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    passwd: "${NEW_PASSWORD}"
+chpasswd:
+  expire: false
+
 packages:
   - qemu-guest-agent
   - apt-transport-https

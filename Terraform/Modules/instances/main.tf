@@ -11,6 +11,7 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
       REGISTRY           = var.registry_cache
       KUBERNETES_VERSION = var.kuberentes_version
       TIME_ZONE          = var.time_zone
+      NEW_PASSWORD       = local.password_hash
     })
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }
@@ -54,6 +55,10 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
   network_device {
     bridge = "vmbr0"
   }
-
 }
 
+resource "random_password" "vm_password" {
+  length           = 16
+  special          = true
+  override_special = "!@#%^&*()-_=+[]{}<>:?" # optional, controls which special chars are allowed
+}
