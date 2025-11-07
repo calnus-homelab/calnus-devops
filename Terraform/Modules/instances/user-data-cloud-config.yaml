@@ -1,6 +1,9 @@
 #cloud-config
 hostname: ${Name}
 timezone: America/Mexico_City
+preserve_hostname: false
+package_update: true
+package_upgrade: true
 users:
   - default
   - name: ubuntu
@@ -10,31 +13,66 @@ users:
     ssh_authorized_keys:
       - ${ssh_public_key}
     sudo: ALL=(ALL) NOPASSWD:ALL
-package_update: true
 packages:
   - qemu-guest-agent
-  - net-tools
-  - curl
+  - apt-transport-https
   - ca-certificates
+  - curl
   - gnupg
   - lsb-release
+  - software-properties-common
+
 write_files:
-  - path: /etc/docker/daemon.json
-    content: |
-      {
-        "registry-mirrors": ["${registry}"]
-      }
+  - path: /etc/modules-load.d/k8s.conf
     owner: root:root
     permissions: '0644'
+    content: |
+      overlay
+      br_netfilter
+
+  - path: /etc/sysctl.d/k8s.conf
+    owner: root:root
+    permissions: '0644'
+    content: |
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables = 1
+      net.ipv4.ip_forward = 1
+
 runcmd:
-  - systemctl enable qemu-guest-agent
-  - systemctl start qemu-guest-agent
-  - mkdir -p /etc/apt/keyrings
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-  - apt-get update
-  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-  - usermod -aG docker ubuntu
-  - systemctl enable docker
-  - systemctl start docker
-  - echo "Docker and Docker Compose installed successfully" > /root/cloud-init.log
+  - [ systemctl, enable, qemu-guest-agent]
+
+  - [ systemctl, start, qemu-guest-agent]
+  # Disable swap and prevent it from being mounted again
+  - [ swapoff, -a ]
+  - [ sed, -i, '/ swap / s/^\(.*\)$/#\1/', /etc/fstab ]
+
+  # Ensure kernel modules are loaded now
+  - [ modprobe, overlay ]
+  - [ modprobe, br_netfilter ]
+
+  # Apply sysctl settings
+  - [ sysctl, --system ]
+
+  # Prepare apt keyrings dir
+  - [ mkdir, -p, /etc/apt/keyrings ]
+
+  # Add Kubernetes apt key and repo (${KUBERNETES_VERSION} stable URL used in your snippet)
+  - [ bash, -c, "curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBERNETES_VERSION}/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg" ]
+  - [ bash, -c, 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBERNETES_VERSION}/deb/ /" > /etc/apt/sources.list.d/kubernetes.list' ]
+
+  # Update apt and install containerd first
+  - [ apt, update ]
+  - [ apt, install, -y, containerd ]
+
+  # Configure containerd and enable service
+  - [ mkdir, -p, /etc/containerd ]
+  - [ bash, -c, "containerd config default | tee /etc/containerd/config.toml" ]
+  - [ systemctl, restart, containerd ]
+  - [ systemctl, enable, containerd ]
+
+  # Install kube packages from the added repository and hold them
+  - [ apt, update ]
+  - [ apt, install, -y, kubelet, kubeadm, kubectl ]
+  - [ apt-mark, hold, kubelet, kubeadm, kubectl ]
+
+# End of cloud-config

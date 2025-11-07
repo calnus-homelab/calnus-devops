@@ -65,3 +65,7 @@ variable registry_cache{
     type=string
     default="http://192.168.68.9:5000"
 }
+variable kuberentes_version{
+    type=string
+    default="v1.34"
+}
