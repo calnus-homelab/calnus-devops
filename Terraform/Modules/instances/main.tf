@@ -25,8 +25,6 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
   source_raw {
     data = templatefile("${path.module}/user-data-cloud-config.yaml", {
       NAME               = local.Name
-      #SSH_PUBLIC_KEY     = trimspace(var.ssh_public_key)
-      #SSH_PUBLIC_KEY     = trimspace(file(pathexpand(var.ssh_public_key)))
       SSH_PUBLIC_KEY     = trimspace(file(pathexpand("~/.ssh/${var.ssh_public_key}")))
       REGISTRY           = var.registry_cache
       KUBERNETES_VERSION = var.kuberentes_version
@@ -65,7 +63,7 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
     ip_config {
       ipv4 {
         #address = "dhcp"
-        address = var.ip_address
+        address = "${var.ip_address}/24"
         gateway = var.gw_ip_address
       }
     }   

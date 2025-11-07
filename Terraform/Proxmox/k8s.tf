@@ -1,10 +1,11 @@
 
 locals {
   nodes = {
-    "master" = "192.168.68.28/24"
-    "Worker-2" = "192.168.68.29/24"
+    "master"   = "192.168.68.28"
+    "Worker-2" = "192.168.68.29"
   }
 }
+
 
 module "ubuntu_nodes" {
   source            = "../Modules/instances"
