@@ -3,6 +3,7 @@ module "ubuntu_images" {
   for_each   = local.images
   remote_url = each.value.remote_url
   image_name = each.value.image_name
+  
   providers = {
     proxmox = proxmox
   }
