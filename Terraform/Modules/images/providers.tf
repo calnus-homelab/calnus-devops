@@ -6,11 +6,3 @@ terraform {
     }
   }
 }
-
-provider "proxmox" {
-  endpoint = var.promox_endpoint
-  insecure = true
-  ssh {
-    agent = true
-  }
-}
