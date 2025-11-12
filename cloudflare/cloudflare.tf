@@ -15,6 +15,7 @@ locals {
     { name = "localai" },
     { name = "ytd" },
     { name = "isos", ip="192.168.68.4" },
+    { name = "seafile"},
     { name = "nas", ip="192.168.68.4" },
     { name = "minio", ip="192.168.68.4" },
     { name = "minio-gui", ip="192.168.68.4" },
