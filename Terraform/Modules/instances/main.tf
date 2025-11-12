@@ -12,6 +12,10 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
       KUBERNETES_VERSION = var.kuberentes_version
       TIME_ZONE          = var.time_zone
       NEW_PASSWORD       = local.password_hash
+      MINIO_ACCESS_KEY   = var.minio_access_key
+      MINIO_SECRET_KEY   = var.minio_secret_key
+      MINIO_ENDPOINT     = var.minio_endpoint
+      POD_NETWORK_CIDR   = "172.16.0.0/16"
     })
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }
@@ -34,15 +38,21 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
     dedicated = local.resolved_spec.memory_mb
   }
   disk {
-    datastore_id = var.nvme_storage_pool
+    datastore_id = var.storage_pool
     import_from  = var.cloud_image
     interface    = "virtio0"
     iothread     = true
     discard      = "on"
     size         = local.resolved_spec.storage_gb
   }
-
+  lifecycle {
+    ignore_changes = [
+      network_device,
+      vga
+    ]
+  }
   initialization {
+    datastore_id = var.storage_pool
     ip_config {
       ipv4 {
         #address = "dhcp"
@@ -54,7 +64,8 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
   }
   network_device {
     bridge = "vmbr0"
-  }
+    disconnected = false
+    }
 }
 
 resource "random_password" "vm_password" {

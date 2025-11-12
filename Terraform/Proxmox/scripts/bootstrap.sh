@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
+set -euxo pipefail
 
-mc alias set myminio https://s3.lanfordlabs.com $AWS_ACCESS_KEY_ID  $AWS_SECRET_ACAWS_SECRET_ACCESS_KEY
+mc alias set myminio $MINIO_ENDPOINT $AWS_ACCESS_KEY_ID  $AWS_SECRET_ACCESS_KEY
 
 LOG="/tmp/bootstrap.log"
 exec > >(tee -a "$LOG") 2>&1
@@ -11,7 +12,7 @@ NAME_LOWER=$(echo "$INSTANCE_NAME" | tr '[:upper:]' '[:lower:]')
 
 if [[ "$NAME_LOWER" == *"master"* ]]; then
   echo "=== This is a master node: $INSTANCE_NAME ==="
-  sudo kubeadm init --pod-network-cidr=172.16.0.0/16 > /tmp/kubeadm-init.log 2>&1
+  sudo kubeadm init --pod-network-cidr=$POD_NETWORK_CIDR > /tmp/kubeadm-init.log 2>&1
 
   # Config kubeconfig para ubuntu user
 
@@ -37,7 +38,14 @@ elif [[ "$NAME_LOWER" == *"worker"* ]]; then
     mc cp myminio/kube/join-command.txt /tmp/join-command.txt
     echo "No existe /tmp/join-command.txt, worker no se unirá automáticamente."
     # opcional: esperar un tiempo por si el archivo aparece
-    # timeout=300; while [[ ! -f /tmp/join-command.txt && $timeout -gt 0 ]]; do sleep 5; ((timeout-=5)); done
+    timeout=300; while [[ ! -f /tmp/join-command.txt && $timeout -gt 0 ]]; do sleep 5; ((timeout-=5)); done
+    if [[ -f /tmp/join-command.txt ]]; then
+      echo "Join command file found after waiting, executing join..."
+      mc cp myminio/kube/join-command.txt /tmp/join-command.txt
+      sudo bash -c "$(cat /tmp/join-command.txt) --ignore-preflight-errors=all" > /tmp/kubeadm-join.log 2>&1 || true
+    else
+      echo "Timeout reached. Join command file still not found. Exiting."
+    fi
     # luego intentar....
   fi
 else

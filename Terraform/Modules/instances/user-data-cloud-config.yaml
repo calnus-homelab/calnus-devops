@@ -61,7 +61,30 @@ write_files:
         capabilities = ["pull", "resolve"]
         skip_verify = true
 
+  - path: /etc/environment
+    owner: root:root
+    permissions: '0644'
+    content: |
+      # /etc/environment (no exports)
+      AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
+      MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      POD_NETWORK_CIDR=${POD_NETWORK_CIDR}
+
+  - path: /etc/profile.d/app_env.sh
+    owner: root:root
+    permissions: '0644'
+    content: |
+      # /etc/profile.d/app_env.sh
+      export AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
+      export AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
+      export MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      export POD_NETWORK_CIDR=${POD_NETWORK_CIDR}
+  
 runcmd:
+  - chmod +x /etc/profile.d/app_env.sh  
+  - wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc
+  - chmod +x /usr/local/bin/mc
   - [ systemctl, enable, qemu-guest-agent]
 
   - [ systemctl, start, qemu-guest-agent]
@@ -97,9 +120,7 @@ runcmd:
   - [ apt, update ]
   - [ apt, install, -y, kubelet, kubeadm, kubectl ]
   - [ apt-mark, hold, kubelet, kubeadm, kubectl ]
-  # - sudo mkdir -p /etc/containerd/certs.d/docker.io
-  - echo 'plugins."io.containerd.grpc.v1.cri".registry.config_path = "/etc/containerd/certs.d"' | sudo tee -a /etc/containerd/config.toml
-  #- printf 'server = "https://registry-1.docker.io"\nhost."http://${REGISTRY}".capabilities = ["pull", "resolve"]\n' | sudo tee /etc/containerd/certs.d/docker.io/hosts.toml
+
 
   # Finalmente reiniciamos containerd y kubelet
   - [ systemctl, daemon-reload ]

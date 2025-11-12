@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint = "https://pve-local.lanfordlabs.com/"
+  endpoint = local.defaults.proxmox_endpoint
   insecure = true
   ssh {
     agent = true

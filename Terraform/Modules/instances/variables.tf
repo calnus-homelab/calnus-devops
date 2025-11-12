@@ -48,7 +48,7 @@ variable "ip_address" {
 variable "gw_ip_address" {
   description = "The gw Ip address"
   type        = string
-  default     = "192.168.68.1"
+  default     = "192.168.1.1"
 }
 variable "registry_cache" {
   type    = string
@@ -65,4 +65,21 @@ variable "time_zone" {
 variable "instance_type" {
   type        = string
   description = "EC2-style instance type name (e.g. t3.small, m5.large)."
+}
+
+variable "minio_access_key" {
+  type        = string
+  description = "MinIO access key"
+  sensitive   = true
+}
+
+variable "minio_secret_key" {
+  type        = string
+  description = "MinIO secret key"
+  sensitive   = true
+}
+
+variable "minio_endpoint" {
+  type        = string
+  description = "MinIO endpoint URL"
 }

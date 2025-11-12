@@ -1,19 +1,17 @@
 
 
 locals {
+  
   nodes = {
     "Master" = {
-      ip             = "192.168.68.28"
-      ami            = "ubuntu_24_04"
-      instance_type  = "t3.large"
-      ssh_public_key = "id_ed25519.pub"
+      ip             = "192.168.1.50"
+      gw_ip_address  = "192.168.1.1"
+      
     }
-    #"Worker-2" = {
-    #  ip             = "192.168.68.29"
-    #  ami            = "ubuntu_24_04"
-    #  instance_type  = "t3.large"
-    #  ssh_public_key = "id_ed25519.pub"
-    #}
+    "Worker-2" = {
+      ip             = "192.168.1.51"
+      gw_ip_address  = "192.168.1.1"      
+      }
   }
 }
 variable "private_key_path" {
@@ -21,13 +19,13 @@ variable "private_key_path" {
   default = "/home/jose/.ssh/id_ed25519" # ruta a la clave privada usada para SSH
 }
 resource "time_sleep" "wait_time" {
-  depends_on     = [module.ubuntu_nodes]
+  depends_on      = [module.ubuntu_nodes]
   create_duration = "4m"
 }
 
 
 resource "null_resource" "bootstrap" {
-  for_each = local.merged_nodes
+  for_each   = local.merged_nodes
   depends_on = [time_sleep.wait_time]
 
   connection {
