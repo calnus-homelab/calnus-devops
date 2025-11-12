@@ -16,7 +16,7 @@ locals {
 }
 variable "private_key_path" {
   type    = string
-  default = "/home/jose/.ssh/id_ed25519" # ruta a la clave privada usada para SSH
+  default = "/home/jose/.ssh/id_rsa" # ruta a la clave privada usada para SSH
 }
 resource "time_sleep" "wait_time" {
   depends_on      = [module.ubuntu_nodes]
