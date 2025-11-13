@@ -54,7 +54,7 @@ variable "registry_cache" {
   type    = string
   default = "192.168.68.9:5000"
 }
-variable "kuberentes_version" {
+variable "kubernetes_version" {
   type    = string
   default = "v1.34"
 }
@@ -82,4 +82,8 @@ variable "minio_secret_key" {
 variable "minio_endpoint" {
   type        = string
   description = "MinIO endpoint URL"
+}
+variable "private_key_path" {
+  type    = string
+  default = "/home/jose/.ssh/id_rsa" # ruta a la clave privada usada para SSH
 }

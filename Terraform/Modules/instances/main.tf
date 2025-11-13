@@ -5,11 +5,11 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
   node_name    = var.node_name
 
   source_raw {
-    data = templatefile("${path.module}/user-data-cloud-config.yaml", {
+    data = templatefile("${path.module}/scripts/user-data-cloud-config.yaml", {
       NAME               = local.Name
       SSH_PUBLIC_KEY     = trimspace(file(pathexpand("~/.ssh/${var.ssh_public_key}")))
       REGISTRY           = var.registry_cache
-      KUBERNETES_VERSION = var.kuberentes_version
+      KUBERNETES_VERSION = var.kubernetes_version
       TIME_ZONE          = var.time_zone
       NEW_PASSWORD       = local.password_hash
       MINIO_ACCESS_KEY   = var.minio_access_key
@@ -63,13 +63,93 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
     user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id
   }
   network_device {
-    bridge = "vmbr0"
+    bridge       = "vmbr0"
     disconnected = false
-    }
+  }
 }
 
 resource "random_password" "vm_password" {
   length           = 16
   special          = true
   override_special = "!@#%^&*()-_=+[]{}<>:?" # optional, controls which special chars are allowed
+}
+
+resource "time_sleep" "wait_time" {
+  depends_on      = [proxmox_virtual_environment_vm.ubuntu_vm]
+  create_duration = "4m"
+}
+
+resource "null_resource" "bootstrap" {
+  depends_on = [time_sleep.wait_time]
+
+  connection {
+    type        = "ssh"
+    host        = var.ip_address
+    user        = "ubuntu"
+    private_key = file(var.private_key_path)
+    timeout     = "2m"
+  }
+
+  # Subimos el script local->remoto
+  provisioner "file" {
+    source      = ("${path.module}/scripts/bootstrap.sh")
+    destination = "/tmp/bootstrap.sh"
+  }
+
+  # Ejecutamos el script remotamente
+  provisioner "remote-exec" {
+    inline = [
+      "source /etc/profile.d/app_env.sh",
+      "chmod +x /tmp/bootstrap.sh",
+      "/tmp/bootstrap.sh"
+    ]
+  }
+
+  triggers = {
+    ip        = var.ip_address
+    timestamp = timestamp()
+  }
+}
+
+
+resource "null_resource" "fetch_remote_file" {
+  depends_on = [null_resource.bootstrap]
+  # Re-run when the instance id or its public_ip changes
+  triggers = {
+    instance_ip  = var.ip_address
+    instance_key = proxmox_virtual_environment_vm.ubuntu_vm.id
+    # if you later expose an id output from the module, replace/add:
+    # instance_id = module.ubuntu_nodes[each.key].instance_id
+  }
+
+  # make sure instance is created first
+
+  connection {
+    type        = "ssh"
+    host        = var.ip_address
+    user        = "ubuntu"
+    private_key = file(var.private_key_path)
+    timeout     = "2m"
+  }
+
+  # remote-exec: simple check so Terraform waits until SSH is ready
+  provisioner "remote-exec" {
+    inline = [
+      "echo ssh-ready"
+    ]
+  }
+  # local-exec: run on the machine executing terraform (this is the SCP)
+  provisioner "local-exec" {
+    command = <<EOT
+mkdir -p "${path.module}/logs"
+if [ ! -f "${path.module}/logs/bootstrap_setup.log" ]; then
+  scp -o StrictHostKeyChecking=no -i ${var.private_key_path} ubuntu@${var.ip_address}:/tmp/bootstrap.log ${path.module}/logs/bootstrap_setup.log
+else
+  echo "local file ${path.module}/logs/bootstrap_setup.log already exists, skipping scp"
+fi
+EOT
+
+    # optionally allow failure and continue:
+    # on_failure = "continue"
+  }
 }
