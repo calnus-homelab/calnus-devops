@@ -24,7 +24,7 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
 
 
 
-resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
+resource "proxmox_virtual_environment_vm" "vm" {
   name      = local.Name
   node_name = var.node_name
   agent {
@@ -76,7 +76,7 @@ resource "random_password" "vm_password" {
 }
 
 resource "time_sleep" "wait_time" {
-  depends_on      = [proxmox_virtual_environment_vm.ubuntu_vm]
+  depends_on      = [proxmox_virtual_environment_vm.vm]
   create_duration = "4m"
 }
 
@@ -118,7 +118,7 @@ resource "null_resource" "fetch_remote_file" {
   # Re-run when the instance id or its public_ip changes
   triggers = {
     instance_ip  = var.ip_address
-    instance_key = proxmox_virtual_environment_vm.ubuntu_vm.id
+    instance_key = proxmox_virtual_environment_vm.vm.id
     # if you later expose an id output from the module, replace/add:
     # instance_id = module.ubuntu_nodes[each.key].instance_id
   }

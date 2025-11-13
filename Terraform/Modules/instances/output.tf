@@ -3,7 +3,7 @@ output "ip_address" {
 }
 
 output "instance_type" {
-  value = proxmox_virtual_environment_vm.ubuntu_vm.id  # or whatever resource you use
+  value = proxmox_virtual_environment_vm.vm.id  # or whatever resource you use
 }
 
 output "generated_password" {
