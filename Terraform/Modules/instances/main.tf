@@ -16,6 +16,7 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
       MINIO_SECRET_KEY   = var.minio_secret_key
       MINIO_ENDPOINT     = var.minio_endpoint
       POD_NETWORK_CIDR   = "172.16.0.0/16"
+      CNI_MANIFEST_URL   = var.cni_manifest_url
     })
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }
@@ -145,5 +146,21 @@ resource "null_resource" "fetch_remote_file" {
 EOT
     # optionally allow failure and continue:
     # on_failure = "continue"
+  }
+}
+
+resource "null_resource" "cleanup_ssh" {
+  # capture IP in triggers so this null_resource depends on the VM
+  triggers = {
+    vm_ip = var.ip_address
+    # add other stable triggers if needed, e.g. instance id
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<EOT
+ssh-keygen -R "${self.triggers["vm_ip"]}" 2>/dev/null || true
+echo "Cleaned known_hosts entry for ${self.triggers["vm_ip"]}"
+EOT
   }
 }

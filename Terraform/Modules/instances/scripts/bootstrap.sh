@@ -21,8 +21,13 @@ if [[ "$NAME_LOWER" == *"master"* ]]; then
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
   # Aplicar CNI (ejemplo Calico)
-  kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
 
+  if [[ "$NAME_LOWER" == *"01"* ]]; then
+    echo "Initial Master applying the CNI : $NAME_LOWER"
+    kubectl apply -f ${CNI_MANIFEST_URL:-https://raw.githubusercontent.com/projectcalico/calico/v3.31.0/manifests/calico.yaml}
+  else
+    echo "Secondary Master Joining as control-plane: $NAME_LOWER"
+  fi
   # Extraer join command del log y guardarlo en /tmp/join-command.txt
   # (kubeadm imprime un "kubeadm join ..." al final; esto intenta extraerlo)
   grep -A2 "kubeadm join" /tmp/kubeadm-init.log | tr '\n' ' ' | sed 's/\\//g' > /tmp/join-command.txt || true

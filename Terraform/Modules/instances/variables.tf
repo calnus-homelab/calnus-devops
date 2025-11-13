@@ -87,3 +87,9 @@ variable "private_key_path" {
   type    = string
   default = "/home/jose/.ssh/id_rsa" # ruta a la clave privada usada para SSH
 }
+
+variable cni_manifest_url {
+  type        = string
+  description = "URL of the CNI manifest to apply"
+  default     = "https://raw.githubusercontent.com/projectcalico/calico/v3.31.0/manifests/calico.yaml"
+}
