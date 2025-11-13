@@ -141,14 +141,8 @@ resource "null_resource" "fetch_remote_file" {
   # local-exec: run on the machine executing terraform (this is the SCP)
   provisioner "local-exec" {
     command = <<EOT
-mkdir -p "${path.module}/logs"
-if [ ! -f "${path.module}/logs/bootstrap_setup.log" ]; then
-  scp -o StrictHostKeyChecking=no -i ${var.private_key_path} ubuntu@${var.ip_address}:/tmp/bootstrap.log ${path.module}/logs/bootstrap_setup.log
-else
-  echo "local file ${path.module}/logs/bootstrap_setup.log already exists, skipping scp"
-fi
+    scp -o StrictHostKeyChecking=no -i ${var.private_key_path} ubuntu@${var.ip_address}:/tmp/bootstrap.log ${path.module}/logs/bootstrap_setup.log
 EOT
-
     # optionally allow failure and continue:
     # on_failure = "continue"
   }

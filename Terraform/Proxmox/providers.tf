@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint = local.defaults.proxmox_endpoint
+  endpoint = local.proxmox_defaults.proxmox_endpoint
   insecure = true
   ssh {
     agent = true

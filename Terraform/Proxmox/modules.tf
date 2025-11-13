@@ -1,6 +1,6 @@
 module "ubuntu_images" {
   source       = "../Modules/images"
-  for_each     = local.images
+  for_each     = local.merged_images
   remote_url   = each.value.remote_url
   image_name   = each.value.image_name
   node_name    = each.value.node_name
