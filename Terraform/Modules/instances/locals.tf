@@ -15,5 +15,22 @@ locals {
     local.instance_type_map["t3.small"]
   )
   password_hash = bcrypt(random_password.vm_password.result)
+  masters = {
+    for i in range(var.master_count) :
+    format("Master-%02d", i + 1) => {
+      role  = "master"
+      ip    = cidrhost(var.network_cidr, var.start_ip_offset + i)
+      index = i
+    }
+  }
+
+  workers = {
+    for i in range(var.worker_count) :
+    format("worker-%02d", i + 1) => {
+      role  = "worker"
+      ip    = cidrhost(var.network_cidr, var.start_ip_offset + var.master_count + i)
+      index = i
+    }
+  }
 
 }

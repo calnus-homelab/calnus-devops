@@ -26,6 +26,8 @@ packages:
   - gnupg
   - lsb-release
   - software-properties-common
+  - nfs-common
+  - ufw
 
 write_files:
   - path: /etc/modules-load.d/k8s.conf
@@ -72,7 +74,7 @@ write_files:
       POD_NETWORK_CIDR=${POD_NETWORK_CIDR}
 
   - path: /etc/profile.d/app_env.sh
-    owner: root:root
+    owner: ubuntu:ubuntu
     permissions: '0644'
     content: |
       # /etc/profile.d/app_env.sh
@@ -80,6 +82,7 @@ write_files:
       export AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
       export MINIO_ENDPOINT=${MINIO_ENDPOINT}
       export POD_NETWORK_CIDR=${POD_NETWORK_CIDR}
+      export CNI_MANIFEST_URL=${CNI_MANIFEST_URL}
   
 runcmd:
   - chmod +x /etc/profile.d/app_env.sh  
@@ -126,4 +129,27 @@ runcmd:
   - [ systemctl, daemon-reload ]
   - [ systemctl, restart, containerd ]
   - [ systemctl, restart, kubelet ]
+  # Basic system access
+  - ufw allow, 22/tcp                    # SSH
+  # Kubernetes API server (masters only, but safe for all)
+  - ufw allow 6443/tcp
+  # etcd (masters only)
+  - ufw allow 2379:2380/tcp
+  # kubelet API for all nodes
+  - ufw allow 10250/tcp
+  # kube-scheduler + controller-manager (masters only)
+  - ufw allow 10257/tcp
+  - ufw allow 10259/tcp
+  # NodePort range
+  - ufw allow 30000:32767/tcp
+  # For Flannel (VXLAN)
+  - ufw allow 8472/udp
+  # For Calico (if you use it)
+  - ufw allow 179/tcp
+  # For kubeadm control-plane node load balancing (optional)
+  - ufw allow 10256/tcp
+  # Enable UFW
+  #- echo "y" | ufw enable
+  # Restart services
+  #- systemctl restart ufw
 # End of cloud-config

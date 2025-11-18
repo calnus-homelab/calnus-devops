@@ -15,8 +15,9 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
       MINIO_ACCESS_KEY   = var.minio_access_key
       MINIO_SECRET_KEY   = var.minio_secret_key
       MINIO_ENDPOINT     = var.minio_endpoint
-      POD_NETWORK_CIDR   = "172.16.0.0/16"
+      POD_NETWORK_CIDR   = "10.244.0.0/16"
       CNI_MANIFEST_URL   = var.cni_manifest_url
+
     })
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }
@@ -77,7 +78,7 @@ resource "random_password" "vm_password" {
 
 resource "time_sleep" "wait_time" {
   depends_on      = [proxmox_virtual_environment_vm.vm]
-  create_duration = "4m"
+  create_duration = "5m"
 }
 
 resource "null_resource" "bootstrap" {
@@ -100,7 +101,6 @@ resource "null_resource" "bootstrap" {
   # Ejecutamos el script remotamente
   provisioner "remote-exec" {
     inline = [
-      "source /etc/profile.d/app_env.sh",
       "chmod +x /tmp/bootstrap.sh",
       "/tmp/bootstrap.sh"
     ]
@@ -164,3 +164,4 @@ echo "Cleaned known_hosts entry for ${self.triggers["vm_ip"]}"
 EOT
   }
 }
+

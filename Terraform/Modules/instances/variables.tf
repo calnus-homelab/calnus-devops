@@ -88,8 +88,31 @@ variable "private_key_path" {
   default = "/home/jose/.ssh/id_rsa" # ruta a la clave privada usada para SSH
 }
 
-variable cni_manifest_url {
+variable "cni_manifest_url" {
   type        = string
   description = "URL of the CNI manifest to apply"
-  default     = "https://raw.githubusercontent.com/projectcalico/calico/v3.31.0/manifests/calico.yaml"
+  default     = "https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+}
+
+variable "master_count" {
+  type        = number
+  description = "Number of master nodes"
+  default     = 3
+}
+
+variable "network_cidr" {
+  type        = string
+  description = "CIDR block for the network"
+  default     = ""
+}
+
+variable "start_ip_offset" {
+  type        = number
+  description = "Starting offset for IP assignment"
+  default     = 10
+}
+variable "worker_count" {
+  type        = number
+  description = "Number of worker nodes"
+  default     = 2
 }

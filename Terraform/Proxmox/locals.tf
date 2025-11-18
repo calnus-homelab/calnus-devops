@@ -18,7 +18,7 @@ locals {
   kubernetes_local = {
     kubernetes_version = "v1.34"
     time_zone          = "America/Mexico_City"
-    cni_manifest_url    = "https://raw.githubusercontent.com/projectcalico/calico/v3.31.0/manifests/calico.yaml"
+    cni_manifest_url    = "https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
   }
 
   merged_images = {

@@ -1,24 +1,32 @@
-output "node_ips" {
-  description = "IP addresses of all Ubuntu nodes"
+output "master_node_ips" {
+  description = "IP addresses of all master nodes"
   value = {
-    for name, mod in module.ubuntu_nodes :
+    for name, mod in module.master_nodes :
     name => mod.ip_address
   }
 }
 
 
-output "node_instances" {
-  description = "Instance identifiers of all Ubuntu nodes"
+output "worker_node_ips" {
+  description = "IP addresses of all worker nodes"
   value = {
-    for name, mod in module.ubuntu_nodes :
-    name => mod.instance_type
+    for name, mod in module.worker_nodes :
+    name => mod.ip_address
   }
 }
 
-output "node_passwords" {
+output "master_node_passwords" {
   description = "dinamic generatos pssword"
   value = {
-    for name, mod in module.ubuntu_nodes :
+    for name, mod in module.master_nodes :
+    name => mod.generated_password
+  }
+  sensitive = true
+}
+output "worker_node_passwords" {
+  description = "dinamic generatos pssword"
+  value = {
+    for name, mod in module.worker_nodes :
     name => mod.generated_password
   }
   sensitive = true
