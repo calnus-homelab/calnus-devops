@@ -10,7 +10,7 @@ variable "master_count" {
 
 variable "worker_count" {
   type    = number
-  default = 3
+  default = 0
 }
 
 # where to start allocating host numbers inside the CIDR (avoid .0,.1,.255)
