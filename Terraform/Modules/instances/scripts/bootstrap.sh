@@ -2,7 +2,7 @@
 #set -euo pipefail
 set -euxo pipefail
 
-mc alias set myminio $MINIO_ENDPOINT $AWS_ACCESS_KEY_ID  $AWS_SECRET_ACCESS_KEY
+#mc alias set myminio $MINIO_ENDPOINT $AWS_ACCESS_KEY_ID  $AWS_SECRET_ACCESS_KEY
 
 LOG="/tmp/bootstrap.log"
 exec > >(tee -a "$LOG") 2>&1
@@ -13,6 +13,10 @@ entries=(
 "192.168.1.60 Master-01"
 "192.168.1.61 Master-02"
 "192.168.1.62 Master-03"
+"192.168.1.63 Worker-01"
+"192.168.1.64 Worker-02"
+"192.168.1.65 Worker-03"
+
 )
 
 for entry in "${entries[@]}"; do

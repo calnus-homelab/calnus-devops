@@ -16,7 +16,7 @@ variable "nvme_storage_pool" {
 variable "promox_endpoint" {
   description = "The pve node name"
   type        = string
-  default     = "https://192.168.68.103:8006/"
+  default     = "https://192.168.1.30:8006/"
 }
 variable "server_name" {
   description = "The new server name"
@@ -52,7 +52,7 @@ variable "gw_ip_address" {
 }
 variable "registry_cache" {
   type    = string
-  default = "192.168.68.9:5000"
+  default = "192.168.1.9:5000"
 }
 variable "kubernetes_version" {
   type    = string
@@ -85,7 +85,7 @@ variable "minio_endpoint" {
 }
 variable "private_key_path" {
   type    = string
-  default = "/home/jose/.ssh/id_rsa" # ruta a la clave privada usada para SSH
+  default = "~/.ssh/id_rsa" # ruta a la clave privada usada para SSH
 }
 
 variable "cni_manifest_url" {

@@ -4,7 +4,7 @@ terraform {
         endpoints = {
             s3 = "https://s3.lanfordlabs.com"   # Minio endpoint
         }
-        key = "pve/terraform.tfstate"        # Name of the tfstate file
+        key = "pve/terraform-ms-01.tfstate"        # Name of the tfstate file
         region = "local"                     # Region validation will be skipped
         skip_region_validation = true
         skip_credentials_validation = true  # Skip AWS related checks and validations

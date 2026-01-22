@@ -5,12 +5,12 @@ variable "network_cidr" {
 
 variable "master_count" {
   type    = number
-  default = 3
+  default = 1
 }
 
 variable "worker_count" {
   type    = number
-  default = 0
+  default = 3
 }
 
 # where to start allocating host numbers inside the CIDR (avoid .0,.1,.255)

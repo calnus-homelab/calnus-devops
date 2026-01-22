@@ -1,7 +1,7 @@
 variable "node_name" {
   description = "The pve node name"
   type        = string
-  default     = "pvekda"
+  default     = "pve"
 }
 variable "storage_pool" {
   description = "The pve node name"
@@ -16,7 +16,7 @@ variable "nvme_storage_pool" {
 variable "promox_endpoint" {
   description = "The pve node name"
   type        = string
-  default     = "https://192.168.68.103:8006/"
+  default     = "https://192.168.1.30:8006/"
 }
 variable "server_name" {
   description = "The new server name"

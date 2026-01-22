@@ -40,7 +40,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
     dedicated = local.resolved_spec.memory_mb
   }
   disk {
-    datastore_id = var.storage_pool
+    datastore_id = var.nvme_storage_pool
     import_from  = var.cloud_image
     interface    = "virtio0"
     iothread     = true
