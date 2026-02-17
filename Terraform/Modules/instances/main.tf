@@ -21,6 +21,11 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
     })
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }
+  lifecycle {
+    ignore_changes = [
+      source_raw
+    ]
+  }
 }
 
 
@@ -45,13 +50,10 @@ resource "proxmox_virtual_environment_vm" "vm" {
     interface    = "virtio0"
     iothread     = true
     discard      = "on"
-    size         = local.resolved_spec.storage_gb
+    size         = var.storage_size
   }
   lifecycle {
-    ignore_changes = [
-      network_device,
-      vga
-    ]
+    ignore_changes = [ ]
   }
   initialization {
     datastore_id = var.storage_pool
@@ -78,76 +80,9 @@ resource "random_password" "vm_password" {
 
 resource "time_sleep" "wait_time" {
   depends_on      = [proxmox_virtual_environment_vm.vm]
-  create_duration = "5m"
+  create_duration = "3s"
 }
 
-resource "null_resource" "bootstrap" {
-  depends_on = [time_sleep.wait_time]
-
-  connection {
-    type        = "ssh"
-    host        = var.ip_address
-    user        = "ubuntu"
-    private_key = file(var.private_key_path)
-    timeout     = "2m"
-  }
-
-  # Subimos el script local->remoto
-  provisioner "file" {
-    source      = ("${path.module}/scripts/bootstrap.sh")
-    destination = "/tmp/bootstrap.sh"
-  }
-
-  # Ejecutamos el script remotamente
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/bootstrap.sh",
-      "/tmp/bootstrap.sh"
-    ]
-  }
-
-  triggers = {
-    ip        = var.ip_address
-    timestamp = timestamp()
-  }
-}
-
-
-resource "null_resource" "fetch_remote_file" {
-  depends_on = [null_resource.bootstrap]
-  # Re-run when the instance id or its public_ip changes
-  triggers = {
-    instance_ip  = var.ip_address
-    instance_key = proxmox_virtual_environment_vm.vm.id
-    # if you later expose an id output from the module, replace/add:
-    # instance_id = module.ubuntu_nodes[each.key].instance_id
-  }
-
-  # make sure instance is created first
-
-  connection {
-    type        = "ssh"
-    host        = var.ip_address
-    user        = "ubuntu"
-    private_key = file(var.private_key_path)
-    timeout     = "2m"
-  }
-
-  # remote-exec: simple check so Terraform waits until SSH is ready
-  provisioner "remote-exec" {
-    inline = [
-      "echo ssh-ready"
-    ]
-  }
-  # local-exec: run on the machine executing terraform (this is the SCP)
-  provisioner "local-exec" {
-    command = <<EOT
-    scp -o StrictHostKeyChecking=no -i ${var.private_key_path} ubuntu@${var.ip_address}:/tmp/bootstrap.log ${path.module}/logs/bootstrap_setup.log
-EOT
-    # optionally allow failure and continue:
-    # on_failure = "continue"
-  }
-}
 
 resource "null_resource" "cleanup_ssh" {
   # capture IP in triggers so this null_resource depends on the VM

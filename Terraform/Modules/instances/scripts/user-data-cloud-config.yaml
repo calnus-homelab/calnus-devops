@@ -30,29 +30,6 @@ packages:
   - ufw
 
 write_files:
-  - path: /etc/modules-load.d/k8s.conf
-    owner: root:root
-    permissions: '0644'
-    content: |
-      overlay
-      br_netfilter
-
-  - path: /etc/sysctl.d/k8s.conf
-    owner: root:root
-    permissions: '0644'
-    content: |
-      net.bridge.bridge-nf-call-ip6tables = 1
-      net.bridge.bridge-nf-call-iptables = 1
-      net.ipv4.ip_forward = 1
-
-  - path: /etc/containerd/config.toml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      version = 2
-      [plugins."io.containerd.grpc.v1.cri".registry]
-        config_path = "/etc/containerd/certs.d"
-
   - path: /etc/containerd/certs.d/docker.io/hosts.toml
     owner: root:root
     permissions: '0644'
@@ -61,75 +38,17 @@ write_files:
 
       [host."http://${REGISTRY}"]
         capabilities = ["pull", "resolve"]
-        skip_verify = true
-
-  - path: /etc/environment
-    owner: root:root
-    permissions: '0644'
-    content: |
-      # /etc/environment (no exports)
-      AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
-      AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
-      MINIO_ENDPOINT=${MINIO_ENDPOINT}
-      POD_NETWORK_CIDR=${POD_NETWORK_CIDR}
-
-  - path: /etc/profile.d/app_env.sh
-    owner: ubuntu:ubuntu
-    permissions: '0644'
-    content: |
-      # /etc/profile.d/app_env.sh
-      export AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
-      export AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
-      export MINIO_ENDPOINT=${MINIO_ENDPOINT}
-      export POD_NETWORK_CIDR=${POD_NETWORK_CIDR}
-      export CNI_MANIFEST_URL=${CNI_MANIFEST_URL}
+        skip_verify = true 
   
 runcmd:
-  - chmod +x /etc/profile.d/app_env.sh  
-  - wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc
-  - chmod +x /usr/local/bin/mc
   - [ systemctl, enable, qemu-guest-agent]
-
   - [ systemctl, start, qemu-guest-agent]
   # Disable swap and prevent it from being mounted again
   - [ swapoff, -a ]
   - [ sed, -i, '/ swap / s/^\(.*\)$/#\1/', /etc/fstab ]
-
-  # Ensure kernel modules are loaded now
-  - [ modprobe, overlay ]
-  - [ modprobe, br_netfilter ]
-
-  # Apply sysctl settings
-  - [ sysctl, --system ]
-
-  # Prepare apt keyrings dir
-  - [ mkdir, -p, /etc/apt/keyrings ]
-
-  # Add Kubernetes apt key and repo (${KUBERNETES_VERSION} stable URL used in your snippet)
-  - [ bash, -c, "curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBERNETES_VERSION}/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg" ]
-  - [ bash, -c, 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBERNETES_VERSION}/deb/ /" > /etc/apt/sources.list.d/kubernetes.list' ]
-
   # Update apt and install containerd first
   - [ apt, update ]
-  - [ apt, install, -y, containerd ]
-
-  # Configure containerd and enable service
-  - [ mkdir, -p, /etc/containerd ]
-  - [ bash, -c, "containerd config default | tee /etc/containerd/config.toml" ]
-  - [ systemctl, restart, containerd ]
-  - [ systemctl, enable, containerd ]
-
   # Install kube packages from the added repository and hold them
-  - [ apt, update ]
-  - [ apt, install, -y, kubelet, kubeadm, kubectl ]
-  - [ apt-mark, hold, kubelet, kubeadm, kubectl ]
-
-
-  # Finalmente reiniciamos containerd y kubelet
-  - [ systemctl, daemon-reload ]
-  - [ systemctl, restart, containerd ]
-  - [ systemctl, restart, kubelet ]
-  # Basic system access
   - ufw allow, 22/tcp                    # SSH
   # Kubernetes API server (masters only, but safe for all)
   - ufw allow 6443/tcp
@@ -149,6 +68,14 @@ runcmd:
   # For kubeadm control-plane node load balancing (optional)
   - ufw allow 10256/tcp
   # Enable UFW
+  - |
+    cat <<EOF >> /etc/hosts
+    # Kubernetes cluster nodes
+    192.168.1.60 master-01
+    192.168.1.61 worker-01
+    192.168.1.62 worker-02
+    192.168.1.63 worker-03
+    EOF
   #- echo "y" | ufw enable
   # Restart services
   #- systemctl restart ufw

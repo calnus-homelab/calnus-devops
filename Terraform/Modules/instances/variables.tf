@@ -37,9 +37,9 @@ variable "cloud_image" {
   type        = string
 }
 variable "storage_size" {
-  description = "The new server Core count"
+  description = "The drive size in gb"
   type        = number
-  default     = 2
+  default     = 40
 }
 variable "ip_address" {
   description = "The new Ip address"
