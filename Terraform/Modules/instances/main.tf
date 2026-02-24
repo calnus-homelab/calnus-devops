@@ -12,9 +12,6 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
       KUBERNETES_VERSION = var.kubernetes_version
       TIME_ZONE          = var.time_zone
       NEW_PASSWORD       = local.password_hash
-      MINIO_ACCESS_KEY   = var.minio_access_key
-      MINIO_SECRET_KEY   = var.minio_secret_key
-      MINIO_ENDPOINT     = var.minio_endpoint
       POD_NETWORK_CIDR   = "10.244.0.0/16"
       CNI_MANIFEST_URL   = var.cni_manifest_url
 
@@ -53,7 +50,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
     size         = var.storage_size
   }
   lifecycle {
-    ignore_changes = [ ]
+    ignore_changes = []
   }
   initialization {
     datastore_id = var.storage_pool
@@ -70,6 +67,18 @@ resource "proxmox_virtual_environment_vm" "vm" {
     bridge       = "vmbr0"
     disconnected = false
   }
+  dynamic "hostpci" {
+    for_each = var.hostpci_id != null ? [var.hostpci_id] : []
+
+    content {
+      device = "hostpci0"
+      id     = hostpci.value
+      pcie   = false
+      rombar = true
+      xvga   = false
+    }
+  }
+
 }
 
 resource "random_password" "vm_password" {

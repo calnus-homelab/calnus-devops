@@ -7,6 +7,7 @@ locals {
     "t3.large"   = { cores = 2, memory_mb = 8192, storage_gb = 60 }
     "m5.large"   = { cores = 4, memory_mb = 8192, storage_gb = 80 }
     "m5.xlarge"  = { cores = 4, memory_mb = 16384, storage_gb = 120 }
+    "m5.2large"  = { cores = 4, memory_mb = 20480, storage_gb = 120 }
     "m5.2xlarge" = { cores = 8, memory_mb = 32768, storage_gb = 200 }
   }
   resolved_spec = lookup(

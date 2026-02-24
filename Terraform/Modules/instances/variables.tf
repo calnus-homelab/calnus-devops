@@ -66,23 +66,6 @@ variable "instance_type" {
   type        = string
   description = "EC2-style instance type name (e.g. t3.small, m5.large)."
 }
-
-variable "minio_access_key" {
-  type        = string
-  description = "MinIO access key"
-  sensitive   = true
-}
-
-variable "minio_secret_key" {
-  type        = string
-  description = "MinIO secret key"
-  sensitive   = true
-}
-
-variable "minio_endpoint" {
-  type        = string
-  description = "MinIO endpoint URL"
-}
 variable "private_key_path" {
   type    = string
   default = "~/.ssh/id_rsa" # ruta a la clave privada usada para SSH
@@ -115,4 +98,10 @@ variable "worker_count" {
   type        = number
   description = "Number of worker nodes"
   default     = 2
+}
+
+variable "hostpci_id" {
+  type        = string
+  description = "PCI device id (e.g. 0000:01:00)"
+  default     = null
 }

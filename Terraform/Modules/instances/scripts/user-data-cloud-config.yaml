@@ -76,6 +76,38 @@ runcmd:
     192.168.1.62 worker-02
     192.168.1.63 worker-03
     EOF
+  - |
+    # Detect first non-root NVMe disk
+    DISK=$(lsblk -dn -o NAME,TYPE | awk '$2=="disk"{print $1}' | grep nvme | head -n 1)
+
+    if [ -z "$DISK" ]; then
+      echo "No NVMe disk found"
+      exit 1
+    fi
+
+    DEVICE="/dev/$DISK"
+
+    echo "Using disk: $DEVICE"
+
+    # Create partition if none exists
+    if ! lsblk $${DEVICE} | grep -q part; then
+      parted -s $DEVICE mklabel gpt
+      parted -s $DEVICE mkpart primary 0% 100%
+    fi
+
+    PARTITION="$${DEVICE}p1"
+
+    # Create filesystem if none exists
+    if ! blkid $PARTITION; then
+      mkfs.xfs -f $PARTITION
+    fi
+
+    mkdir -p /mnt/nvme
+
+    UUID=$(blkid -s UUID -o value $PARTITION)
+    echo "UUID=$UUID /mnt/nvme xfs defaults,nofail 0 2" >> /etc/fstab
+
+    mount -a  
   #- echo "y" | ufw enable
   # Restart services
   #- systemctl restart ufw
