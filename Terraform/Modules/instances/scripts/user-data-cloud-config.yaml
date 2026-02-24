@@ -77,7 +77,7 @@ runcmd:
     192.168.1.63 worker-03
     EOF
   - |
-    # Detect first non-root NVMe disk
+    # Detect first NVMe disk
     DISK=$(lsblk -dn -o NAME,TYPE | awk '$2=="disk"{print $1}' | grep nvme | head -n 1)
 
     if [ -z "$DISK" ]; then
@@ -93,19 +93,38 @@ runcmd:
     if ! lsblk $${DEVICE} | grep -q part; then
       parted -s $DEVICE mklabel gpt
       parted -s $DEVICE mkpart primary 0% 100%
+      partprobe $DEVICE
+      sleep 2
     fi
 
     PARTITION="$${DEVICE}p1"
 
-    # Create filesystem if none exists
-    if ! blkid $PARTITION; then
+    # Wait until partition appears
+    while [ ! -b "$PARTITION" ]; do
+      sleep 1
+    done
+
+    # Check for filesystem UUID specifically
+    UUID=$(blkid -s UUID -o value $PARTITION)
+
+    if [ -z "$UUID" ]; then
+      echo "No filesystem detected. Creating XFS..."
       mkfs.xfs -f $PARTITION
+      sleep 2
+      UUID=$(blkid -s UUID -o value $PARTITION)
+    fi
+
+    if [ -z "$UUID" ]; then
+      echo "ERROR: Unable to detect filesystem UUID."
+      exit 1
     fi
 
     mkdir -p /mnt/nvme
 
-    UUID=$(blkid -s UUID -o value $PARTITION)
-    echo "UUID=$UUID /mnt/nvme xfs defaults,nofail 0 2" >> /etc/fstab
+    # Avoid duplicate fstab entries
+    if ! grep -q "$UUID" /etc/fstab; then
+      echo "UUID=$UUID /mnt/nvme xfs defaults,nofail 0 2" >> /etc/fstab
+    fi
 
     mount -a  
   #- echo "y" | ufw enable
