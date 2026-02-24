@@ -11,3 +11,5 @@ metallb_range: "192.168.1.70-192.168.1.99"
 argocd: false
 argocd_service_type: LoadBalancer
 dns_servers: []
+registry_ip: 192.168.1.9
+registry_port: 5000
