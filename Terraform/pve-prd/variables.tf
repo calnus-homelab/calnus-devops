@@ -10,3 +10,8 @@ variable "storage_pool" {
 variable "ssh_public_key" {
   default = "id_rsa.pub"
 }
+variable "storage_spec" {
+  description = "drive sizes"
+  type        = list(number)
+  default     = [40, 500]
+}

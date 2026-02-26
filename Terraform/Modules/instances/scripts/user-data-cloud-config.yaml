@@ -10,14 +10,23 @@ users:
     groups:
       - sudo
     shell: /bin/bash
-    ssh_authorized_keys:
-      - ${SSH_PUBLIC_KEY}
     sudo: ALL=(ALL) NOPASSWD:ALL
     lock_passwd: false
     passwd: "${NEW_PASSWORD}"
 chpasswd:
   expire: false
-
+disk_setup:
+  /dev/sdb:
+    table_type: gpt
+    layout: true
+    overwrite: false
+fs_setup:
+  - label: data
+    filesystem: xfs
+    device: /dev/sdb1
+    overwrite: false
+mounts:
+  - ["/dev/sdb1", "/var/lib/longhorn", "xfs", "defaults,noatime", "0", "2"]
 packages:
   - qemu-guest-agent
   - apt-transport-https
@@ -28,18 +37,6 @@ packages:
   - software-properties-common
   - nfs-common
   - ufw
-
-write_files:
-  - path: /etc/containerd/certs.d/docker.io/hosts.toml
-    owner: root:root
-    permissions: '0644'
-    content: |
-      server = "https://registry-1.docker.io"
-
-      [host."http://${REGISTRY}"]
-        capabilities = ["pull", "resolve"]
-        skip_verify = true 
-  
 runcmd:
   - [ systemctl, enable, qemu-guest-agent]
   - [ systemctl, start, qemu-guest-agent]
@@ -68,66 +65,3 @@ runcmd:
   # For kubeadm control-plane node load balancing (optional)
   - ufw allow 10256/tcp
   # Enable UFW
-  - |
-    cat <<EOF >> /etc/hosts
-    # Kubernetes cluster nodes
-    192.168.1.60 master-01
-    192.168.1.61 worker-01
-    192.168.1.62 worker-02
-    192.168.1.63 worker-03
-    EOF
-  - |
-    # Detect first NVMe disk
-    DISK=$(lsblk -dn -o NAME,TYPE | awk '$2=="disk"{print $1}' | grep nvme | head -n 1)
-
-    if [ -z "$DISK" ]; then
-      echo "No NVMe disk found"
-      exit 1
-    fi
-
-    DEVICE="/dev/$DISK"
-
-    echo "Using disk: $DEVICE"
-
-    # Create partition if none exists
-    if ! lsblk $${DEVICE} | grep -q part; then
-      parted -s $DEVICE mklabel gpt
-      parted -s $DEVICE mkpart primary 0% 100%
-      partprobe $DEVICE
-      sleep 2
-    fi
-
-    PARTITION="$${DEVICE}p1"
-
-    # Wait until partition appears
-    while [ ! -b "$PARTITION" ]; do
-      sleep 1
-    done
-
-    # Check for filesystem UUID specifically
-    UUID=$(blkid -s UUID -o value $PARTITION)
-
-    if [ -z "$UUID" ]; then
-      echo "No filesystem detected. Creating XFS..."
-      mkfs.xfs -f $PARTITION
-      sleep 2
-      UUID=$(blkid -s UUID -o value $PARTITION)
-    fi
-
-    if [ -z "$UUID" ]; then
-      echo "ERROR: Unable to detect filesystem UUID."
-      exit 1
-    fi
-
-    mkdir -p /mnt/nvme
-
-    # Avoid duplicate fstab entries
-    if ! grep -q "$UUID" /etc/fstab; then
-      echo "UUID=$UUID /mnt/nvme xfs defaults,nofail 0 2" >> /etc/fstab
-    fi
-
-    mount -a  
-  #- echo "y" | ufw enable
-  # Restart services
-  #- systemctl restart ufw
-# End of cloud-config

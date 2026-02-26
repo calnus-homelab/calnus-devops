@@ -105,3 +105,8 @@ variable "hostpci_id" {
   description = "PCI device id (e.g. 0000:01:00)"
   default     = null
 }
+variable "storage_spec" {
+  description = "drive sizes"
+  type        = list(number)
+  default     = [40, 500]
+}

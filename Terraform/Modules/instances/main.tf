@@ -6,15 +6,9 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
 
   source_raw {
     data = templatefile("${path.module}/scripts/user-data-cloud-config.yaml", {
-      NAME               = local.Name
-      SSH_PUBLIC_KEY     = trimspace(file(pathexpand("~/.ssh/${var.ssh_public_key}")))
-      REGISTRY           = var.registry_cache
-      KUBERNETES_VERSION = var.kubernetes_version
-      TIME_ZONE          = var.time_zone
-      NEW_PASSWORD       = local.password_hash
-      POD_NETWORK_CIDR   = "10.244.0.0/16"
-      CNI_MANIFEST_URL   = var.cni_manifest_url
-
+      NAME           = local.Name
+      TIME_ZONE      = var.time_zone
+      NEW_PASSWORD   = local.password_hash
     })
     file_name = "user-data-cloud-config-${local.Name}.yaml"
   }
@@ -28,8 +22,9 @@ resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
 
 
 resource "proxmox_virtual_environment_vm" "vm" {
-  name      = local.Name
-  node_name = var.node_name
+  name          = local.Name
+  node_name     = var.node_name
+  scsi_hardware = "virtio-scsi-single"
   agent {
     enabled = true
   }
@@ -41,19 +36,26 @@ resource "proxmox_virtual_environment_vm" "vm" {
   memory {
     dedicated = local.resolved_spec.memory_mb
   }
-  disk {
-    datastore_id = var.nvme_storage_pool
-    import_from  = var.cloud_image
-    interface    = "virtio0"
-    iothread     = true
-    discard      = "on"
-    size         = var.storage_size
+  dynamic "disk" {
+    for_each = var.storage_spec
+    content {
+      datastore_id = var.nvme_storage_pool
+      interface    = "scsi${disk.key}"
+      discard      = "on"
+      size         = disk.value
+      # Only for first disk
+      import_from = disk.key == 0 ? var.cloud_image : null
+    }
   }
   lifecycle {
     ignore_changes = []
   }
   initialization {
     datastore_id = var.storage_pool
+    user_account {
+      keys = [
+      trimspace(file(pathexpand("~/.ssh/${var.ssh_public_key}")))]
+    }
     ip_config {
       ipv4 {
         #address = "dhcp"
