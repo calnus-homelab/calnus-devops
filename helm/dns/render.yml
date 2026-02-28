@@ -1,0 +1,27 @@
+provider:
+  name: cloudflare
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-token
+        key: api-token
+
+sources:
+  - service
+  - ingress
+
+policy: sync
+
+registry: txt
+txtOwnerId: k3s-prd-homelab
+
+domainFilters:
+  - lanfordlabs.com
+
+serviceAccount:
+  create: true
+
+rbac:
+  create: true

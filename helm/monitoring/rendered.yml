@@ -1,0 +1,109 @@
+prometheus:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - prometheus-prd.lanfordlabs.com
+    paths:
+      - /
+    pathType: Prefix
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: prometheus-prd.lanfordlabs.com
+      cert-manager.io/cluster-issuer: letsencrypt-prd
+    tls:
+      - secretName: prometheus-tls
+        hosts:
+          - prometheus-prd.lanfordlabs.com
+
+  prometheusSpec:
+    retention: 365d
+    retentionSize: 40GB
+    additionalScrapeConfigs:
+      - job_name: "windows-exporter"
+        static_configs:
+          - targets:
+              - "192.168.1.248:9182"
+              - "192.168.1.59:9182"
+      - job_name: "gpu"
+        static_configs:
+          - targets: 
+              - "192.168.1.248:9835"
+      - job_name: "pve-exporter"
+        static_configs:
+          - targets:
+            - "192.168.1.2"
+            - "192.168.1.10"
+        metrics_path: /pve
+        params:
+          module: [default]
+          cluster: ["1"]
+          node: ["1"]
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: 192.168.1.12:9221
+            
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 50Gi
+
+grafana:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana-prd.lanfordlabs.com
+    paths:
+      - /
+    pathType: Prefix
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: grafana-prd.lanfordlabs.com
+      cert-manager.io/cluster-issuer: letsencrypt-prd
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana-prd.lanfordlabs.com
+
+alertmanager:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - alertmanager-prd.lanfordlabs.com
+    paths:
+      - /
+    pathType: Prefix
+    annotations:    
+      external-dns.alpha.kubernetes.io/hostname: alertmanager-prd.lanfordlabs.com
+      cert-manager.io/cluster-issuer: letsencrypt-prd
+    tls:
+      - secretName: alertmanager-tls
+        hosts:
+          - alertmanager-prd.lanfordlabs.com
+          
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+
