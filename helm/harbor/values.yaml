@@ -1,0 +1,44 @@
+expose:
+  type: ingress
+  tls:
+    enabled: true
+  ingress:
+    className: traefik
+    hosts:
+      core: harbor.lanfordlabs.com
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: harbor.lanfordlabs.com
+      cert-manager.io/cluster-issuer: letsencrypt-prd
+
+externalURL: http://harbor.lanfordlabs.com
+
+harborAdminPassword: "SECRETPASSWORD"
+
+persistence:
+  enabled: true
+  persistentVolumeClaim:
+    registry:
+      size: 50Gi
+    jobservice:
+      size: 5Gi
+    database:
+      size: 10Gi
+    redis:
+      size: 5Gi
+    trivy:
+      size: 10Gi
+
+trivy:
+  enabled: true
+
+portal:
+  replicas: 1
+
+core:
+  replicas: 1
+
+jobservice:
+  replicas: 1
+
+registry:
+  replicas: 1

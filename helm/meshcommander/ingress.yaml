@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: meshcommander
+  namespace: meshcommander
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: mesh.lanfordlabs.com
+    cert-manager.io/cluster-issuer: letsencrypt-prd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - mesh.lanfordlabs.com
+      secretName: mesh-tls
+  rules:
+    - host: mesh.lanfordlabs.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: meshcommander
+                port:
+                  number: 80

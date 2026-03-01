@@ -30,7 +30,7 @@ variable "ssh_public_key" {
 variable "cpu_type" {
   description = "The new server type"
   type        = string
-  default     = "x86-64-v2-AES"
+  default     = "host"
 }
 variable "cloud_image" {
   description = "OS image"

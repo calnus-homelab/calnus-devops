@@ -1,0 +1,40 @@
+persistence:
+  config:
+    enabled: true
+    storageClass: longhorn
+    accessMode: ReadWriteOnce
+    size: 10Gi
+  media:
+    enabled: true
+    existingClaim: media-intel
+    
+#service:
+#  type: LoadBalancer  # or ClusterIP + Ingress
+service:
+    type: LoadBalancer
+ingress:
+  enabled: true
+  ingressClassName: traefik
+
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: jellyfin-prd.lanfordlabs.com
+    cert-manager.io/cluster-issuer: letsencrypt-prd
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  hosts:
+    - host: jellyfin-prd.lanfordlabs.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: jellyfin-tls
+      hosts:
+        - jellyfin-prd.lanfordlabs.com
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "1Gi"
+  limits:
+    cpu: "4"
+    memory: "4Gi"

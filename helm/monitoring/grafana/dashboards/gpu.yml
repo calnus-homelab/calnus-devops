@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: windows
+  name: gpu
   namespace: monitoring
   labels:
     grafana_dashboard: "1"
 data:
-  windows.json: |
+  gpu.json: |
     {
       "annotations": {
         "list": [

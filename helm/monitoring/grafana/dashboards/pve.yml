@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: windows
+  name: pve
   namespace: monitoring
   labels:
     grafana_dashboard: "1"
 data:
-  windows.json: |
+  pve.json: |
     {
       "annotations": {
         "list": [
